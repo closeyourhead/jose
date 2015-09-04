@@ -1,15 +1,13 @@
 # JWT/JWS/JWE library for PHP
 
 [![License](https://poser.pugx.org/closeyourhead/jose/license)](https://packagist.org/packages/closeyourhead/jose)
+[![Latest Stable Version](https://poser.pugx.org/closeyourhead/jose/v/stable)](https://packagist.org/packages/closeyourhead/jose)
+[![Latest Unstable Version](https://poser.pugx.org/closeyourhead/jose/v/unstable)](https://packagist.org/packages/closeyourhead/jose)
+
 [![Build Status](https://travis-ci.org/closeyourhead/jose.svg?branch=master)](https://travis-ci.org/closeyourhead/jose)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/closeyourhead/jose/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/closeyourhead/jose/?branch=master)
 [![Coverage Status](https://coveralls.io/repos/closeyourhead/jose/badge.svg?branch=master&service=github)](https://coveralls.io/github/closeyourhead/jose?branch=master)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/8bc06326-2fce-4399-8c42-b8204982fe7d/mini.png)](https://insight.sensiolabs.com/projects/8bc06326-2fce-4399-8c42-b8204982fe7d)
-
-[![Latest Stable Version](https://poser.pugx.org/closeyourhead/jose/v/stable)](https://packagist.org/packages/closeyourhead/jose)
-[![Latest Unstable Version](https://poser.pugx.org/closeyourhead/jose/v/unstable)](https://packagist.org/packages/closeyourhead/jose)
-
-
 
 ## Requirements
 
