@@ -13,7 +13,7 @@ abstract class RSA extends PublicKey
     protected function validateKey($private_or_public_key_resource)
     {
         $valid_type = OPENSSL_KEYTYPE_RSA;
-        $details = @openssl_pkey_get_details($private_or_public_key_resource);
+        $details = openssl_pkey_get_details($private_or_public_key_resource);
         if (!is_array($details) || !isset($details['type']) || $valid_type !== $details['type']) {
             throw new UnexpectedValueException('Invalid key: ' . openssl_error_string());
         }
