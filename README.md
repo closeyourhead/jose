@@ -1,5 +1,7 @@
 # JWT/JWS/JWE library for PHP
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/closeyourhead/jose/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/closeyourhead/jose/?branch=master)
+
 ## Requirements
 
 php version >= 5.4.8
