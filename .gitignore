@@ -3,6 +3,7 @@ vendor/
 composer.lock
 composer.phar
 tests/report/*
+build/logs/*
 usage.php
 src/Cyh/Jose/Encryption/Curve/
 src/Cyh/Jose/Jwk.php
