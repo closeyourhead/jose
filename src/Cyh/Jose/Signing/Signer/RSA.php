@@ -3,7 +3,7 @@ namespace Cyh\Jose\Signing\Signer;
 
 use Cyh\Jose\Signing\Exception\UnexpectedValueException;
 
-abstract class RSA extends  PublicKey
+abstract class RSA extends PublicKey
 {
     /**
      * @param resource $private_or_public_key_resource
