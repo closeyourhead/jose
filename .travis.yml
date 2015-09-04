@@ -8,6 +8,7 @@ php:
 before_script:
   - curl -s http://getcomposer.org/installer | php
   - php composer.phar install --dev --prefer-source
+  - phpenv config-add myconfig.ini
 
 script:
   - mkdir -p build/logs
