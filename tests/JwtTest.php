@@ -1,4 +1,5 @@
 <?php
+namespace Cyh\Jose\Tests;
 
 use Cyh\Jose\Jwt;
 use Cyh\Jose\Utils\Base64Url;
@@ -13,8 +14,22 @@ use Cyh\Jose\Signing\Signer\RS512;
 use Cyh\Jose\Signing\Signer\ES256;
 use Cyh\Jose\Signing\Signer\ES384;
 use Cyh\Jose\Signing\Signer\ES512;
+use Cyh\Jose\Validate\Before;
+use Cyh\Jose\Validate\Expiration;
+use Cyh\Jose\Validate\Issuer;
+use Cyh\Jose\Validate\Audience;
+use Cyh\Jose\Exception\UnexpectedValueException;
+use Cyh\Jose\Exception\MalformedException;
+use Cyh\Jose\Signing\Exception\InvalidSignatureException;
+use Cyh\Jose\Signing\Exception\UnexpectedValueException as SignerUnexpectedValueException;
+use Cyh\Jose\Validate\Exception\BeforeException;
+use Cyh\Jose\Validate\Exception\ExpiredException;
+use Cyh\Jose\Validate\Exception\InvalidAudienceException;
+use Cyh\Jose\Validate\Exception\InvalidIssuerException;
+use Cyh\Jose\Validate\Exception\ValidateException;
 
-class JwtTest extends PHPUnit_Framework_TestCase
+
+class JwtTest extends \PHPUnit_Framework_TestCase
 {
     private $rsa_prv_key;
     private $rsa_pub_key;
@@ -67,250 +82,212 @@ class JwtTest extends PHPUnit_Framework_TestCase
 
     public function testAlgNoneSuccess()
     {
-        $jwt = new Jwt(new None());
-        $token_strings = $jwt->sign($this->valid_claims);
+        $token_strings = Jwt::sign(new None(), $this->valid_claims);
 
-        $jwt->addValidator(new Cyh\Jose\Validate\Expiration());
-        $jwt->addValidator(new Cyh\Jose\Validate\Before());
-        $jwt->addValidator(new Cyh\Jose\Validate\Issuer('www.example.com'));
-        $jwt->addValidator(new Cyh\Jose\Validate\Audience('test_aud'));
+        $validators = array(
+            new Expiration(),
+            new Before(),
+            new Issuer('www.example.com'),
+            new Audience('test_aud')
+        );
 
-        $verified_claims = $jwt->verify($token_strings);
+        $verified_claims = Jwt::verify(new None(), $token_strings, null, $validators);
 
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     public function testHS256Success()
     {
-        $jwt = new Jwt(new HS256());
-        $token_strings = $jwt->sign($this->valid_claims, 'secret_key');
+        $token_strings = Jwt::sign(new HS256(), $this->valid_claims, 'secret_key');
 
-        $jwt->addValidator(new Cyh\Jose\Validate\Expiration());
-        $jwt->addValidator(new Cyh\Jose\Validate\Before());
-        $jwt->addValidator(new Cyh\Jose\Validate\Issuer('www.example.com'));
-        $jwt->addValidator(new Cyh\Jose\Validate\Audience('test_aud'));
+        $validators = array(
+            new Expiration(),
+            new Before(),
+            new Issuer('www.example.com'),
+            new Audience('test_aud')
+        );
 
-        $verified_claims = $jwt->verify($token_strings, 'secret_key');
+        $verified_claims = Jwt::verify(new HS256(), $token_strings, 'secret_key', $validators);
 
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     public function testHS384Success()
     {
-        $jwt = new Jwt(new HS384());
-        $token_strings = $jwt->sign($this->valid_claims, 'secret_key');
-
-        $verified_claims = $jwt->verify($token_strings, 'secret_key');
+        $token_strings = Jwt::sign(new HS384(), $this->valid_claims, 'secret_key');
+        $verified_claims = Jwt::verify(new HS384(), $token_strings, 'secret_key');
 
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     public function testHS512Success()
     {
-        $jwt = new Jwt(new HS512());
-        $token_strings = $jwt->sign($this->valid_claims, 'secret_key');
-
-        $verified_claims = $jwt->verify($token_strings, 'secret_key');
+        $token_strings = Jwt::sign(new HS512(), $this->valid_claims, 'secret_key');
+        $verified_claims = Jwt::verify(new HS512(), $token_strings, 'secret_key');
 
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     public function testRS256Success()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
-
-        $verified_claims = $jwt->verify($token_strings, $this->rsa_pub_key);
+        $token_strings = Jwt::sign(new RS256(), $this->valid_claims, $this->rsa_prv_key);
+        $verified_claims = Jwt::verify(new RS256(), $token_strings, $this->rsa_pub_key);
 
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     public function testRS384Success()
     {
-        $jwt = new Jwt(new RS384());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
-
-        $verified_claims = $jwt->verify($token_strings, $this->rsa_pub_key);
+        $token_strings = Jwt::sign(new RS384(), $this->valid_claims, $this->rsa_prv_key);
+        $verified_claims = Jwt::verify(new RS384(), $token_strings, $this->rsa_pub_key);
 
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     public function testRS512Success()
     {
-        $jwt = new Jwt(new RS512());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
-
-        $verified_claims = $jwt->verify($token_strings, $this->rsa_pub_key);
+        $token_strings = Jwt::sign(new RS512(), $this->valid_claims, $this->rsa_prv_key);
+        $verified_claims = Jwt::verify(new RS512(), $token_strings, $this->rsa_pub_key);
 
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     public function testES256Success()
     {
-        $jwt = new Jwt(new ES256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->ec_prv_key);
-
-        $verified_claims = $jwt->verify($token_strings, $this->ec_pub_key);
+        $token_strings = Jwt::sign(new ES256(), $this->valid_claims, $this->ec_prv_key);
+        $verified_claims = Jwt::verify(new ES256(), $token_strings, $this->ec_pub_key);
 
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     public function testES384Success()
     {
-        $jwt = new Jwt(new ES384());
-        $token_strings = $jwt->sign($this->valid_claims, $this->ec_prv_key);
-
-        $verified_claims = $jwt->verify($token_strings, $this->ec_pub_key);
+        $token_strings = Jwt::sign(new ES384(), $this->valid_claims, $this->ec_prv_key);
+        $verified_claims = Jwt::verify(new ES384(), $token_strings, $this->ec_pub_key);
 
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     public function testES512Success()
     {
-        $jwt = new Jwt(new ES512());
-        $token_strings = $jwt->sign($this->valid_claims, $this->ec_prv_key);
-
-        $verified_claims = $jwt->verify($token_strings, $this->ec_pub_key);
+        $token_strings = Jwt::sign(new ES512(), $this->valid_claims, $this->ec_prv_key);
+        $verified_claims = Jwt::verify(new ES512(), $token_strings, $this->ec_pub_key);
 
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     /**
-     * @expectedException Cyh\Jose\Validate\Exception\ExpiredException
+     * @expectedException ExpiredException
      */
     public function testRS256Expired()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->expired_claims, $this->rsa_prv_key);
-
-        $jwt->addValidator(new Cyh\Jose\Validate\Expiration());
-        $jwt->verify($token_strings, $this->rsa_pub_key);
+        $token_strings = Jwt::sign(new RS256(), $this->expired_claims, $this->rsa_prv_key);
+        Jwt::verify(new RS256(), $token_strings, $this->rsa_pub_key, array(new Expiration()));
     }
 
     /**
-     * @expectedException Cyh\Jose\Validate\Exception\ExpiredException
+     * @expectedException ExpiredException
      */
     public function testRS256ExpiredDeterminedDateTime()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->expired_claims, $this->rsa_prv_key);
-
-        $jwt->addValidator(new Cyh\Jose\Validate\Expiration(new \DateTime('now')));
-        $jwt->verify($token_strings, $this->rsa_pub_key);
+        $token_strings = Jwt::sign(new RS256(), $this->expired_claims, $this->rsa_prv_key);
+        Jwt::verify(new RS256(), $token_strings, $this->rsa_pub_key, array(new Expiration(new \DateTime('now'))));
     }
 
     /**
-     * @expectedException Cyh\Jose\Validate\Exception\BeforeException
+     * @expectedException BeforeException
      */
     public function testRS256Before()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->before_claims, $this->rsa_prv_key);
-
-        $jwt->addValidator(new Cyh\Jose\Validate\Before());
-        $jwt->verify($token_strings, $this->rsa_pub_key);
+        $token_strings = Jwt::sign(new RS256(), $this->expired_claims, $this->rsa_prv_key);
+        Jwt::verify(new RS256(), $token_strings, $this->rsa_pub_key, array(new Before()));
     }
 
     /**
-     * @expectedException Cyh\Jose\Validate\Exception\BeforeException
+     * @expectedException BeforeException
      */
     public function testRS256BeforeDeterminedDateTime()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->before_claims, $this->rsa_prv_key);
-
-        $jwt->addValidator(new Cyh\Jose\Validate\Before(new \DateTime('now')));
-        $jwt->verify($token_strings, $this->rsa_pub_key);
+        $token_strings = Jwt::sign(new RS256(), $this->expired_claims, $this->rsa_prv_key);
+        Jwt::verify(new RS256(), $token_strings, $this->rsa_pub_key, array(new Before(new \DateTime('now'))));
     }
 
     /**
-     * @expectedException Cyh\Jose\Validate\Exception\InvalidIssuerException
+     * @expectedException InvalidIssuerException
      */
     public function testRS256InvalidIssuer()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
-
-        $jwt->addValidator(new Cyh\Jose\Validate\Issuer('example.com'));
-        $jwt->verify($token_strings, $this->rsa_pub_key);
+        $token_strings = Jwt::sign(new RS256(), $this->expired_claims, $this->rsa_prv_key);
+        Jwt::verify(new RS256(), $token_strings, $this->rsa_pub_key, array(new Issuer('example.com')));
     }
 
     /**
-     * @expectedException Cyh\Jose\Validate\Exception\InvalidAudienceException
+     * @expectedException InvalidAudienceException
      */
     public function testRS256InvalidAudience()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
-
-        $jwt->addValidator(new Cyh\Jose\Validate\Audience('test_invalid_audience'));
-        $jwt->verify($token_strings, $this->rsa_pub_key);
+        $token_strings = Jwt::sign(new RS256(), $this->expired_claims, $this->rsa_prv_key);
+        Jwt::verify(new RS256(), $token_strings, $this->rsa_pub_key, array(new Audience('invalid_audience')));
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
+     * @expectedException InvalidSignatureException
      */
     public function testRS256SignatureModified()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
+        $token_strings = Jwt::sign(new RS256(), $this->expired_claims, $this->rsa_prv_key);
 
         list($h, $p, $s) = explode('.', $token_strings);
         $mod_token = "$h.$p." . Base64Url::encode('invalid_signature');
 
-        $jwt->verify($mod_token, $this->rsa_pub_key);
+        Jwt::verify(new RS256(), $mod_token, $this->rsa_pub_key);
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
+     * @expectedException InvalidSignatureException
      */
     public function testHS256SignatureModified()
     {
-        $jwt = new Jwt(new HS256());
-        $token_strings = $jwt->sign($this->valid_claims, 'secret_key');
+        $token_strings = Jwt::sign(new HS256(), $this->expired_claims, 'secret_key');
 
         list($h, $p, $s) = explode('.', $token_strings);
         $mod_token = "$h.$p." . Base64Url::encode('invalid_signature');
 
-        $jwt->verify($mod_token, 'secret_key');
+        Jwt::verify(new HS256(), $mod_token, 'secret_key');
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
+     * @expectedException InvalidSignatureException
      */
     public function testES256SignatureModified()
     {
-        $jwt = new Jwt(new ES256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->ec_prv_key);
+        $token_strings = Jwt::sign(new ES256(), $this->expired_claims, $this->rsa_prv_key);
 
         list($h, $p, $s) = explode('.', $token_strings);
         $mod_token = "$h.$p." . Base64Url::encode('invalid_signature');
 
-        $jwt->verify($mod_token, $this->ec_pub_key);
+        Jwt::verify(new ES256(), $mod_token, $this->rsa_pub_key);
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testRS256NoMatchPrivateKeyType()
     {
-        $jwt = new Jwt(new RS256());
-        $jwt->sign($this->valid_claims, $this->ec_prv_key);
+        Jwt::sign(new RS256(), $this->valid_claims, $this->ec_prv_key);
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testRS256NoMatchPublicKeyType()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
-
-        $jwt->verify($token_strings, $this->ec_pub_key);
+        $token_strings = Jwt::sign(new RS256(), $this->valid_claims, $this->rsa_prv_key);
+        Jwt::verify(new RS256(), $token_strings, $this->ec_pub_key);
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testES256NoMatchPrivateKeyType()
     {
@@ -319,54 +296,46 @@ class JwtTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testES256NoMatchPublicKeyType()
     {
-        $jwt = new Jwt(new ES256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->ec_prv_key);
-
-        $jwt->verify($token_strings, $this->rsa_pub_key);
+        $token_strings = Jwt::sign(new ES256(), $this->valid_claims, $this->ec_prv_key);
+        Jwt::verify(new ES256(), $token_strings, $this->rsa_pub_key);
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testRS256InvalidPrivateKey()
     {
-        $jwt = new Jwt(new RS256());
-        $jwt->sign($this->valid_claims, 'invalid_prv_key');
+        Jwt::sign(new RS256(), $this->valid_claims, 'invalid_prv_key');
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testRS256InvalidPublicKey()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
-
-        $jwt->verify($token_strings, 'invalid_pub_key');
+        $token_strings = Jwt::sign(new RS256(), $this->valid_claims, $this->rsa_prv_key);
+        Jwt::verify(new RS256(), $token_strings, 'invalid_pub_key');
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testHS256InvalidSecretKey()
     {
-        $jwt = new Jwt(new HS256());
-        $token_strings = $jwt->sign($this->valid_claims, 'secret_key');
-
-        $jwt->verify($token_strings, 'invalid_secret_key');
+        $token_strings = Jwt::sign(new HS256(), $this->valid_claims, 'secret_key');
+        Jwt::verify(new HS256(), $token_strings, 'invalid_secret_key');
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testRS256ModifiedHeaderTyp()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
+        $token_strings = Jwt::sign(new RS256(), $this->valid_claims, $this->rsa_prv_key);
 
         list($h, $p, $s) = explode('.', $token_strings);
         $header = Json::decode(Base64Url::decode($h));
@@ -374,16 +343,15 @@ class JwtTest extends PHPUnit_Framework_TestCase
         $h = Base64Url::encode(Json::encode($header));
         $mod_token = "$h.$p.$s";
 
-        $jwt->verify($mod_token, $this->rsa_pub_key);
+        Jwt::verify(new RS256(), $mod_token, $this->rsa_pub_key);
     }
 
     /**
-     * @expectedException Cyh\Jose\Exception\MalformedException
+     * @expectedException MalformedException
      */
     public function testRS256ModifiedAlgHeaderNone()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
+        $token_strings = Jwt::sign(new RS256(), $this->valid_claims, $this->rsa_prv_key);
 
         list($h, $p, $s) = explode('.', $token_strings);
         $header = Json::decode(Base64Url::decode($h));
@@ -391,16 +359,15 @@ class JwtTest extends PHPUnit_Framework_TestCase
         $h = Base64Url::encode(Json::encode($header));
         $mod_token = "$h.$p.$s";
 
-        $jwt->verify($mod_token, $this->rsa_pub_key);
+        Jwt::verify(new RS256(), $mod_token, $this->rsa_pub_key);
     }
 
     /**
-     * @expectedException Cyh\Jose\Exception\MalformedException
+     * @expectedException MalformedException
      */
     public function testRS256ModifiedAlgHeaderNoMatch()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
+        $token_strings = Jwt::sign(new RS256(), $this->valid_claims, $this->rsa_prv_key);
 
         list($h, $p, $s) = explode('.', $token_strings);
         $header = Json::decode(Base64Url::decode($h));
@@ -408,16 +375,15 @@ class JwtTest extends PHPUnit_Framework_TestCase
         $h = Base64Url::encode(Json::encode($header));
         $mod_token = "$h.$p.$s";
 
-        $jwt->verify($mod_token, $this->rsa_pub_key);
+        Jwt::verify(new RS256(), $mod_token, $this->rsa_pub_key);
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
+     * @expectedException InvalidSignatureException
      */
     public function testRS256ModifiedClaimExp()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_key);
+        $token_strings = Jwt::sign(new RS256(), $this->valid_claims, $this->rsa_prv_key);
 
         list($h, $p, $s) = explode('.', $token_strings);
         $payload = Json::decode(Base64Url::decode($p));
@@ -425,78 +391,64 @@ class JwtTest extends PHPUnit_Framework_TestCase
         $p = Base64Url::encode(Json::encode($payload));
         $mod_token = "$h.$p.$s";
 
-        $jwt->verify($mod_token, $this->rsa_pub_key);
+        Jwt::verify(new RS256(), $mod_token, $this->rsa_pub_key);
     }
 
     /**
-     * @expectedException Cyh\Jose\Exception\MalformedException
+     * @expectedException MalformedException
      */
     public function testRS256MalformedToken()
     {
-        $jwt = new Jwt(new RS256);
-
-        $jwt->verify('malformed_token_strings', $this->rsa_pub_key);
+        Jwt::verify(new RS256(), 'malformed_token_strings', $this->rsa_pub_key);
     }
 
 
 
     public function testRS256KeyIsPemStrSuccess()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_pem_str, 'password');
-
-        $verified_claims = $jwt->verify($token_strings, $this->rsa_pub_pem_str);
-
+        $token_strings = Jwt::sign(new RS256(), $this->valid_claims, $this->rsa_prv_pem_str, 'password');
+        $verified_claims = Jwt::verify(new RS256(), $token_strings, $this->rsa_pub_pem_str);
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     public function testES256KeyIsPemStrSuccess()
     {
-        $jwt = new Jwt(new ES256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->ec_prv_pem_str);
-
-        $verified_claims = $jwt->verify($token_strings, $this->ec_pub_pem_str);
-
+        $token_strings = Jwt::sign(new ES256(), $this->valid_claims, $this->ec_prv_pem_str);
+        $verified_claims = Jwt::verify(new ES256(), $token_strings, $this->ec_pub_pem_str);
         $this->assertEquals($this->valid_claims, $verified_claims);
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testRS256PrivateKeyIsPemStrInvalidKeyType()
     {
-        $jwt = new Jwt(new RS256());
-        $jwt->sign($this->valid_claims, $this->ec_prv_pem_str);
+        Jwt::sign(new RS256(), $this->valid_claims, $this->ec_prv_pem_str);
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testRS256PublicKeyIsPemStrInvalidKeyType()
     {
-        $jwt = new Jwt(new RS256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->rsa_prv_pem_str);
-
-        $jwt->verify($token_strings, $this->ec_pub_pem_str);
+        $token_strings = Jwt::sign(new RS256(), $this->valid_claims, $this->rsa_prv_pem_str);
+        Jwt::verify(new RS256(), $token_strings, $this->ec_pub_pem_str);
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testES256PrivateKeyIsPemStrInvalidKeyType()
     {
-        $jwt = new Jwt(new ES256());
-        $jwt->sign($this->valid_claims, $this->rsa_prv_pem_str);
+        Jwt::sign($this->valid_claims, $this->rsa_prv_pem_str);
     }
 
     /**
-     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
+     * @expectedException SignerUnexpectedValueException
      */
     public function testES256PublicKeyIsPemStrInvalidKeyType()
     {
-        $jwt = new Jwt(new ES256());
-        $token_strings = $jwt->sign($this->valid_claims, $this->ec_prv_pem_str);
-
-        $jwt->verify($token_strings, $this->rsa_pub_pem_str);
+        $token_strings = Jwt::sign(new ES256(), $this->valid_claims, $this->ec_prv_pem_str);
+        Jwt::verify(new ES256(), $token_strings, $this->rsa_pub_pem_str);
     }
 }

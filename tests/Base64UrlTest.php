@@ -1,8 +1,9 @@
 <?php
+namespace Cyh\Jose\Tests;
 
 use Cyh\Jose\Utils\Base64Url;
 
-class Base64UrlTest extends PHPUnit_Framework_TestCase
+class Base64UrlTest extends \PHPUnit_Framework_TestCase
 {
     public function testEncodeDecodeBase64UrlSuccess()
     {
@@ -19,7 +20,7 @@ class Base64UrlTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Cyh\Jose\Exception\UnexpectedValueException
+     * @expectedException \Cyh\Jose\Exception\UnexpectedValueException
      */
     public function testDecodeBase64InvalidParam()
     {
@@ -27,7 +28,7 @@ class Base64UrlTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Cyh\Jose\Exception\UnexpectedValueException
+     * @expectedException \Cyh\Jose\Exception\UnexpectedValueException
      */
     public function testEncodeBase64InvalidParam()
     {

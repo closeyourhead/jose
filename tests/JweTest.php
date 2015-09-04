@@ -1,4 +1,5 @@
 <?php
+namespace Cyh\Jose\Tests;
 
 use Cyh\Jose\Jwe;
 use Cyh\Jose\Encryption\Alg\RSA1_5;
@@ -6,7 +7,7 @@ use Cyh\Jose\Encryption\Alg\RSA_OAEP;
 use Cyh\Jose\Encryption\Enc\A128CBC_HS256;
 use Cyh\Jose\Encryption\Enc\A256CBC_HS512;
 
-class JweTest extends PHPUnit_Framework_TestCase
+class JweTest extends \PHPUnit_Framework_TestCase
 {
     private $rsa_prv_key;
     private $rsa_pub_key;
