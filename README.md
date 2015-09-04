@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/closeyourhead/jose.svg?branch=master)](https://travis-ci.org/closeyourhead/jose)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/closeyourhead/jose/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/closeyourhead/jose/?branch=master)
 [![Coverage Status](https://coveralls.io/repos/closeyourhead/jose/badge.svg?branch=master&service=github)](https://coveralls.io/github/closeyourhead/jose?branch=master)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/8bc06326-2fce-4399-8c42-b8204982fe7d/big.png)](https://insight.sensiolabs.com/projects/8bc06326-2fce-4399-8c42-b8204982fe7d)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/8bc06326-2fce-4399-8c42-b8204982fe7d/mini.png)](https://insight.sensiolabs.com/projects/8bc06326-2fce-4399-8c42-b8204982fe7d)
 
 ## Requirements
 
