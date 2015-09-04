@@ -1,5 +1,4 @@
 <?php
-namespace Cyh\Jose\Tests;
 
 use Cyh\Jose\Jwt;
 use Cyh\Jose\Utils\Base64Url;
@@ -18,15 +17,6 @@ use Cyh\Jose\Validate\Before;
 use Cyh\Jose\Validate\Expiration;
 use Cyh\Jose\Validate\Issuer;
 use Cyh\Jose\Validate\Audience;
-use Cyh\Jose\Exception\UnexpectedValueException;
-use Cyh\Jose\Exception\MalformedException;
-use Cyh\Jose\Signing\Exception\InvalidSignatureException;
-use Cyh\Jose\Signing\Exception\UnexpectedValueException as SignerUnexpectedValueException;
-use Cyh\Jose\Validate\Exception\BeforeException;
-use Cyh\Jose\Validate\Exception\ExpiredException;
-use Cyh\Jose\Validate\Exception\InvalidAudienceException;
-use Cyh\Jose\Validate\Exception\InvalidIssuerException;
-use Cyh\Jose\Validate\Exception\ValidateException;
 
 
 class JwtTest extends \PHPUnit_Framework_TestCase
@@ -177,7 +167,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException ExpiredException
+     * @expectedException Cyh\Jose\Validate\Exception\ExpiredException
      */
     public function testRS256Expired()
     {
@@ -186,7 +176,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException ExpiredException
+     * @expectedException Cyh\Jose\Validate\Exception\ExpiredException
      */
     public function testRS256ExpiredDeterminedDateTime()
     {
@@ -195,7 +185,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException BeforeException
+     * @expectedException Cyh\Jose\Validate\Exception\BeforeException
      */
     public function testRS256Before()
     {
@@ -204,7 +194,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException BeforeException
+     * @expectedException Cyh\Jose\Validate\Exception\BeforeException
      */
     public function testRS256BeforeDeterminedDateTime()
     {
@@ -213,7 +203,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidIssuerException
+     * @expectedException Cyh\Jose\Validate\Exception\InvalidIssuerException
      */
     public function testRS256InvalidIssuer()
     {
@@ -222,7 +212,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidAudienceException
+     * @expectedException Cyh\Jose\Validate\Exception\InvalidAudienceException
      */
     public function testRS256InvalidAudience()
     {
@@ -231,7 +221,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidSignatureException
+     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
      */
     public function testRS256SignatureModified()
     {
@@ -244,7 +234,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidSignatureException
+     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
      */
     public function testHS256SignatureModified()
     {
@@ -257,20 +247,20 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidSignatureException
+     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
      */
     public function testES256SignatureModified()
     {
-        $token_strings = Jwt::sign(new ES256(), $this->expired_claims, $this->rsa_prv_key);
+        $token_strings = Jwt::sign(new ES256(), $this->expired_claims, $this->ec_prv_key);
 
         list($h, $p, $s) = explode('.', $token_strings);
         $mod_token = "$h.$p." . Base64Url::encode('invalid_signature');
 
-        Jwt::verify(new ES256(), $mod_token, $this->rsa_pub_key);
+        Jwt::verify(new ES256(), $mod_token, $this->ec_pub_key);
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
      */
     public function testRS256NoMatchPrivateKeyType()
     {
@@ -278,7 +268,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
      */
     public function testRS256NoMatchPublicKeyType()
     {
@@ -287,16 +277,16 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
      */
     public function testES256NoMatchPrivateKeyType()
     {
         $jwt = new Jwt(new ES256());
-        $jwt->sign($this->valid_claims, $this->rsa_prv_key);
+        $jwt->sign(new ES256(), $this->valid_claims, $this->rsa_prv_key);
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
      */
     public function testES256NoMatchPublicKeyType()
     {
@@ -305,7 +295,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
      */
     public function testRS256InvalidPrivateKey()
     {
@@ -313,7 +303,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException Cyh\Jose\Signing\Exception\UnexpectedValueException
      */
     public function testRS256InvalidPublicKey()
     {
@@ -322,7 +312,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
      */
     public function testHS256InvalidSecretKey()
     {
@@ -331,7 +321,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
      */
     public function testRS256ModifiedHeaderTyp()
     {
@@ -347,7 +337,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException MalformedException
+     * @expectedException Cyh\Jose\Exception\MalformedException
      */
     public function testRS256ModifiedAlgHeaderNone()
     {
@@ -363,7 +353,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException MalformedException
+     * @expectedException Cyh\Jose\Exception\MalformedException
      */
     public function testRS256ModifiedAlgHeaderNoMatch()
     {
@@ -379,7 +369,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidSignatureException
+     * @expectedException Cyh\Jose\Signing\Exception\InvalidSignatureException
      */
     public function testRS256ModifiedClaimExp()
     {
@@ -395,7 +385,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException MalformedException
+     * @expectedException Cyh\Jose\Exception\MalformedException
      */
     public function testRS256MalformedToken()
     {
@@ -419,7 +409,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException \Cyh\Jose\Signing\Exception\UnexpectedValueException
      */
     public function testRS256PrivateKeyIsPemStrInvalidKeyType()
     {
@@ -427,7 +417,7 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException \Cyh\Jose\Signing\Exception\UnexpectedValueException
      */
     public function testRS256PublicKeyIsPemStrInvalidKeyType()
     {
@@ -436,15 +426,15 @@ class JwtTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException \Cyh\Jose\Signing\Exception\UnexpectedValueException
      */
     public function testES256PrivateKeyIsPemStrInvalidKeyType()
     {
-        Jwt::sign($this->valid_claims, $this->rsa_prv_pem_str);
+        Jwt::sign(new ES256(), $this->valid_claims, $this->rsa_prv_pem_str);
     }
 
     /**
-     * @expectedException SignerUnexpectedValueException
+     * @expectedException \Cyh\Jose\Signing\Exception\UnexpectedValueException
      */
     public function testES256PublicKeyIsPemStrInvalidKeyType()
     {

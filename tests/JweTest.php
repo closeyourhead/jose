@@ -1,6 +1,4 @@
 <?php
-namespace Cyh\Jose\Tests;
-
 use Cyh\Jose\Jwe;
 use Cyh\Jose\Encryption\Alg\RSA1_5;
 use Cyh\Jose\Encryption\Alg\RSA_OAEP;

@@ -1,6 +1,4 @@
 <?php
-namespace Cyh\Jose\Tests;
-
 use Cyh\Jose\Utils\Json;
 
 class JsonTest extends \PHPUnit_Framework_TestCase
