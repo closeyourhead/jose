@@ -10,9 +10,6 @@ before_install:
   - composer self-update
 
 before_script:
-  - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install --dev --prefer-source
-  - mv composer.phar composer
   - composer require satooshi/php-coveralls --dev
   - phpenv config-add myconfig.ini
 

@@ -1,7 +1,7 @@
 <?php
 namespace Cyh\Jose\Signing\Signer;
 
-class HS512 extends Hmac
+class HS512 extends HMAC
 {
     public function getAlg()
     {
