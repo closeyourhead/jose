@@ -1,0 +1,9 @@
+.idea
+vendor/
+composer.lock
+composer.phar
+tests/report/*
+usage.php
+src/Cyh/Jose/Encryption/Curve/
+src/Cyh/Jose/Jwk.php
+test.php

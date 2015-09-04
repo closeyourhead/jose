@@ -1,0 +1,30 @@
+{
+  "name": "closeyourhead/jose",
+  "type": "library",
+  "description": "JWT/JWS/JWE library for PHP",
+  "keywords": ["jose", "jwt", "jws", "jwe"],
+  "homepage": "https://github.com/closeyourhead/jose/",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "closeyourhead",
+      "homepage": "https://github.com/closeyourhead/"
+    }
+  ],
+
+  "require": {
+    "php": ">=5.4.8",
+    "ext-json": "*",
+    "ext-hash": "*",
+    "ext-openssl": "*",
+    "ext-mbstring": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.8.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Cyh\\Jose\\": "src/Cyh/Jose"
+    }
+  }
+}
