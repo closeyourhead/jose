@@ -42,7 +42,7 @@ class Jwe
      * @param string $private_or_secret_key
      * @param string $pass_phrase default null
      * @return string
-     * @throws \Exception
+     * @throws \Cyh\Jose\Exception\MalformedException
      */
     public static function decrypt(
         AlgInterface $alg, EncInterface $enc, $content, $private_or_secret_key, $pass_phrase=null

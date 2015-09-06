@@ -4,6 +4,7 @@ namespace Cyh\Jose\Encryption\Enc;
 use Cyh\Jose\Encryption\ContentEncryptionKey;
 use Cyh\Jose\Encryption\Random;
 use Cyh\Jose\Utils\String;
+use Cyh\Jose\Encryption\Exception\UnexpectedValueException;
 
 abstract class AES_CBC_HS implements EncInterface
 {
@@ -12,6 +13,7 @@ abstract class AES_CBC_HS implements EncInterface
      * @param ContentEncryptionKey $cek
      * @param string $content
      * @return array array($iv, $cipher_text, $auth_tag)
+     * @throws \Cyh\Jose\Encryption\Exception\UnexpectedValueException
      */
     public function encrypt($aad_base64, ContentEncryptionKey $cek, $content)
     {
@@ -21,6 +23,9 @@ abstract class AES_CBC_HS implements EncInterface
         $cipher_text = openssl_encrypt(
             $content, $this->getMethod(), $cek->getEncKey(), OPENSSL_RAW_DATA, $iv
         );
+        if (false === $cipher_text) {
+            throw new UnexpectedValueException('Unable to encrypt content: ' . openssl_error_string());
+        }
         $auth_tag = $this->createAuthenticationTag($aad_base64, $iv, $cipher_text, $cek);
 
         return array($iv, $cipher_text, $auth_tag);
@@ -33,18 +38,22 @@ abstract class AES_CBC_HS implements EncInterface
      * @param string $cipher_text
      * @param string $auth_tag
      * @return string
-     * @throws \Exception
+     * @throws \Cyh\Jose\Encryption\Exception\UnexpectedValueException
      */
     public function decrypt($aad_base64, ContentEncryptionKey $cek, $iv, $cipher_text, $auth_tag)
     {
         $base_auth_tag = $this->createAuthenticationTag($aad_base64, $iv, $cipher_text, $cek);
         if (!String::equals($base_auth_tag, $auth_tag)) {
-            throw new \Exception('Invalid authentication tag');
+            throw new UnexpectedValueException('Invalid authentication tag');
         }
 
         $content = openssl_decrypt(
             $cipher_text, $this->getMethod(), $cek->getEncKey(), OPENSSL_RAW_DATA, $iv
         );
+        if (false === $content) {
+            throw new UnexpectedValueException('Unable to decrypt cipher_text: ' . openssl_error_string());
+        }
+
         return $content;
     }
 

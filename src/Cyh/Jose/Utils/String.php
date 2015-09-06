@@ -54,14 +54,4 @@ class String
     {
         return mb_substr($string, $offset, $length, '8bit');
     }
-
-    /*
-    public static function paddingPkcs7($message, $block_length)
-    {
-        $pad = ($block_length - (mb_strlen($message, '8bit') % $block_length));
-        $message .= str_repeat(chr($pad), $pad);
-
-        return $message;
-    }
-    */
 }

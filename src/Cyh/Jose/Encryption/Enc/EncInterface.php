@@ -25,6 +25,7 @@ interface EncInterface
      * @param ContentEncryptionKey $cek
      * @param string $content
      * @return array
+     * @throws \Cyh\Jose\Encryption\Exception\UnexpectedValueException
      */
     public function encrypt($aad_base64, ContentEncryptionKey $cek, $content);
 
@@ -35,6 +36,7 @@ interface EncInterface
      * @param string $cipher_text
      * @param string $auth_tag
      * @return string
+     * @throws \Cyh\Jose\Encryption\Exception\UnexpectedValueException
      */
     public function decrypt($aad_base64, ContentEncryptionKey $cek, $iv, $cipher_text, $auth_tag);
 }
