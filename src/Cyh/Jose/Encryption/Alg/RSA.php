@@ -26,7 +26,7 @@ abstract class RSA implements AlgInterface
 
         $this->validateKey($pub_key_resource);
 
-        // TODO: openssl_public_encrypt is not accept public key resource
+        // openssl_public_encrypt is not accept key resource.
         if (openssl_public_encrypt($cek, $encrypted_cek, $public_key, $this->getPaddingType())) {
             return $encrypted_cek;
         }
