@@ -3,7 +3,7 @@ namespace Cyh\Jose\Encryption\Enc;
 
 use Cyh\Jose\Encryption\ContentEncryptionKey;
 use Cyh\Jose\Encryption\Random;
-use Cyh\Jose\Utils\String;
+use Cyh\Jose\Utils\Str;
 use Cyh\Jose\Encryption\Exception\UnexpectedValueException;
 
 abstract class AES_CBC_HS implements EncInterface
@@ -43,7 +43,7 @@ abstract class AES_CBC_HS implements EncInterface
     public function decrypt($aad_base64, ContentEncryptionKey $cek, $iv, $cipher_text, $auth_tag)
     {
         $base_auth_tag = $this->createAuthenticationTag($aad_base64, $iv, $cipher_text, $cek);
-        if (!String::equals($base_auth_tag, $auth_tag)) {
+        if (!Str::equals($base_auth_tag, $auth_tag)) {
             throw new UnexpectedValueException('Invalid authentication tag');
         }
 
@@ -69,7 +69,7 @@ abstract class AES_CBC_HS implements EncInterface
     )
     {
         // 64-Bit Big-Endian Representation of AAD Length
-        $aad_length = String::len($aad_base64);
+        $aad_length = Str::len($aad_base64);
         if (version_compare(PHP_VERSION, '5.6.3', '>=')) {
             $al_value = pack('J1', $aad_length);
 
@@ -85,7 +85,7 @@ abstract class AES_CBC_HS implements EncInterface
         $hmac = hash_hmac($this->getHashAlgorithm(), $concatenated_value, $cek->getMacKey(), true);
 
         // Use the first half (128 bits) of the HMAC output M as the Authentication Tag output T.
-        return String::substr($hmac, 0, 16);
+        return Str::substr($hmac, 0, 16);
     }
 
     /**

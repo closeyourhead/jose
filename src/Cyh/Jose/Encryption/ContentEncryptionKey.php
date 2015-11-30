@@ -1,7 +1,7 @@
 <?php
 namespace Cyh\Jose\Encryption;
 
-use Cyh\Jose\Utils\String;
+use Cyh\Jose\Utils\Str;
 
 class ContentEncryptionKey
 {
@@ -49,7 +49,7 @@ class ContentEncryptionKey
     {
         if (!$this->mac_key) {
             // Use the first 128 bits of this key as the HMAC SHA-256 key MAC_KEY
-            $this->mac_key = String::substr($this->content_encryption_key, 0, 16);
+            $this->mac_key = Str::substr($this->content_encryption_key, 0, 16);
         }
         return $this->mac_key;
     }
@@ -61,7 +61,7 @@ class ContentEncryptionKey
     {
         if (!$this->enc_key) {
             // Use the last 128 bits of this key as the AES-CBC key ENC_KEY
-            $this->enc_key = String::substr($this->content_encryption_key, 16, null);
+            $this->enc_key = Str::substr($this->content_encryption_key, 16, null);
         }
         return $this->enc_key;
     }

@@ -1,7 +1,7 @@
 <?php
 namespace Cyh\Jose\Signing\Signer;
 
-use Cyh\Jose\Utils\String;
+use Cyh\Jose\Utils\Str;
 use Cyh\Jose\Signing\Exception\InvalidSignatureException;
 
 abstract class HMAC implements SignerInterface
@@ -48,7 +48,7 @@ abstract class HMAC implements SignerInterface
             throw new InvalidSignatureException('Unable to verify signature');
         }
 
-        if (String::equals($signature, $hash)) {
+        if (Str::equals($signature, $hash)) {
             return true;
         }
 

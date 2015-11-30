@@ -1,7 +1,7 @@
 <?php
 namespace Cyh\Jose\Utils;
 
-class String
+class Str
 {
     /**
      * should be used to mitigate timing attacks.
